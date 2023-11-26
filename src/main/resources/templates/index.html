@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/base :: baseHead(~{::title}, ~{::script}, ~{::link})}">
+    <title>Tic Tac Toe</title>
+
+    <script src="js/app-main.js"></script>
+
+    <link rel="stylesheet" href="css/main.css" />
+</head>
+
+<body>
+
+    <div th:insert="(~{fragments/header :: header})"></div>
+
+    <div class="game-area card">
+        <div class="card-body">
+            <h4 class="game-status">
+                <th:block th:switch="${playStatus}">
+                    <div th:case="'IN_PROGRESS'" class="alert alert-light" role="alert">
+                        Your turn. Click a square to place an <span th:text="${playerGoFirst ?  'X' : 'O'}"></span>.
+                    </div>
+                    <div th:case="'WON'" class="alert alert-success" role="alert">
+                        You've won!
+                    </div>
+                    <div th:case="'LOST'" class="alert alert-danger" role="alert">
+                        You've lost. Better luck next time!
+                    </div>
+                    <div th:case="'DRAW'" class="alert alert-primary" role="alert">
+                        It's a draw.
+                    </div>
+                </th:block>
+            </h4>
+
+            <table class="board">
+                <tr th:each="row, rowIter : ${board}" class="board-row">
+                    <td th:each="tile, tileIter : ${row}">
+                        <div th:id="${rowIter.index} + '-' + ${tileIter.index}" class="board-row-tile"
+                            th:classappend="${tile != ''} ? ${tile} + '-value' : (${playStatus == 'IN_PROGRESS'} ? 'available')"
+                            th:text="${tile}">
+                            &nbsp;
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <form id="form_mark_tile" th:action="@{/}" method="POST" class="form-inline">
+                <div class="checkbox">
+                    <label><input name="player_go_first" type="checkbox" th:checked="${playerGoFirst}" /> Play
+                        First</label>
+                </div>
+
+                <div style="display: inline-block">
+                    <label for="number_of_rows" class="form-label">Number of Rows:</label>
+                    <input type="number" class="form-control" id="number_of_rows" name="number_of_rows"
+                        style="width: 150px;" th:value="${numberOfRows}" min="0">
+                </div>
+
+                <div class="btn-new-game-wrap">
+                    <button id="btn-new-game" class="btn btn-success btn-lg" role="button">New Game</button>
+                </div>
+
+                <input id="is_game_over" type="hidden" th:value="${playStatus != 'IN_PROGRESS'}" />
+                <input id="tile_id" name="tile_id" type="hidden" value="" />
+                <input id="new_game" name="new_game" type="hidden" value="" />
+            </form>
+        </div>
+    </div>
+
+    <div th:insert="(~{fragments/footer :: footer})"></div>
+
+</body>
+
+</html>
